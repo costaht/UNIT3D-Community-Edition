@@ -33,7 +33,16 @@ class IRCAnnounceBot
 
     public function __construct()
     {
-        $socket = fsockopen(config('irc-bot.server'), config('irc-bot.port'), $_, $_, 5);
+        $tlsEnabled = config('irc-bot.tls_enabled');
+        $protocol = $tlsEnabled ? 'tls://' : 'tcp://';
+        $context = stream_context_create([
+           'ssl' => [
+                'verify_peer' => config('irc-bot.verify_cert'),
+                'verify_peer_name' => config('irc-bot.verify_cert'),
+                ],
+        ]);
+
+        $socket = stream_socket_client($protocol . config('irc-bot.server') . ':' . config('irc-bot.port'), $_, $_, 5, STREAM_CLIENT_CONNECT, $context);
 
         if (!\is_resource($socket)) {
             return;
