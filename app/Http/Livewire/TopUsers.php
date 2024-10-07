@@ -105,7 +105,7 @@ class TopUsers extends Component
     #[Computed(cache: true)]
     final public function seedtimes(): \Illuminate\Support\Collection
     {
-        return User::withSum('history as seedtime', 'seedtime')
+        return User::withAvg('history as seedtime', 'seedtime')
             ->with('group')
             ->where('id', '!=', User::SYSTEM_USER_ID)
             ->whereNotIn('group_id', Group::select('id')->whereIn('slug', ['banned', 'validating', 'disabled', 'pruned']))
